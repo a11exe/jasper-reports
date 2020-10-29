@@ -14,6 +14,6 @@ Examples using jasper report.
     
 ### run
 
-    java -jar target/jasper-report.jar
+    mvn sprig-boot:run
     
-[jasper report examples list](http://localohost:8080)
+After start application: [jasper report examples list](http://localohost:8080)

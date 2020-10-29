@@ -52,14 +52,30 @@ public class JasperReportFill {
         }
     }
 
-    private JasperPrint generateJasperPrint(String template, BeanList beanList) throws Exception {
+    private JasperPrint generateJasperSubreportPrint(String template, BeanList beanList) throws Exception {
         // иницализируем datasource
         JRDataSource dataSource = new JREmptyDataSource();
 
+        // компилируем шаблон
+        JasperReport jasperReport = compileReport("./reports" + template);
+        JasperReport jasperSubReport = compileReport("./reports/subreport.jrxml");
+
+        // заполняем шаблон данными
+        List<Bean> dataList = beanList.getDataBeanList();
+        JRBeanCollectionDataSource beanColDataSource =
+                new JRBeanCollectionDataSource(dataList);
         // заполняем параметры
         Map<String, Object> params = getParams();
-        params.put("SUBREPORT",
-                this.getClass().getClassLoader().getResourceAsStream("./reports/subreport.jrxml"));
+        params.put("subreportParameter", jasperSubReport);
+
+
+        return JasperFillManager.fillReport(
+                jasperReport, params, beanColDataSource);
+    }
+
+    private JasperPrint generateJasperPrint(String template, BeanList beanList) throws Exception {
+        // иницализируем datasource
+        JRDataSource dataSource = new JREmptyDataSource();
 
         // компилируем шаблон
         JasperReport jasperReport = compileReport("./reports" + template);
@@ -67,6 +83,9 @@ public class JasperReportFill {
         List<Bean> dataList = beanList.getDataBeanList();
         JRBeanCollectionDataSource beanColDataSource =
                 new JRBeanCollectionDataSource(dataList);
+        // заполняем параметры
+        Map<String, Object> params = getParams();
+
         return JasperFillManager.fillReport(
                 jasperReport, params, beanColDataSource);
     }
@@ -93,7 +112,7 @@ public class JasperReportFill {
     public byte[] fillSubreports(String template) throws Exception {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             // сгенерим шаблон и заполним его данными
-            JasperPrint jasperPrint = generateJasperPrint(template, dataBeanListWithSubreport);
+            JasperPrint jasperPrint = generateJasperSubreportPrint(template, dataBeanListWithSubreport);
             // Экспортируем ПДФ в стрим
             JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
             // Возвращаем в виде массива байтов

@@ -7,7 +7,11 @@
               pageHeight = "842" columnWidth ="555" leftMargin = "20" rightMargin = "20"
               topMargin = "20" bottomMargin = "20">
 
-    <parameter name="SUBREPORT" class="java.io.InputStream" nestedType=""/>
+    <parameter name = "SUBREPORT_DIR" class = "java.lang.String" isForPrompting = "false">
+        <defaultValueExpression>
+            <![CDATA["./reports/"]]>
+        </defaultValueExpression>
+    </parameter>
 
     <field name = "country" class = "java.lang.String"/>
     <field name = "name" class = "java.lang.String"/>
@@ -91,13 +95,13 @@
             <subreport>
                 <reportElement positionType = "Float" x = "335" y = "25" width = "175"
                                height = "20" isRemoveLineWhenBlank = "true" backcolor = "#99ccff"/>
-
                 <dataSourceExpression>
                     new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource
                     ($F{subReportBeanList})
                 </dataSourceExpression>
-
-                <subreportExpression><![CDATA[JasperCompileManager.compileReport($P{SUBREPORT})]]></subreportExpression>
+                <subreportExpression class = "java.lang.String">
+                    <![CDATA[$P{SUBREPORT_DIR} + "subreport.jasper"]]>
+                </subreportExpression>
             </subreport>
 
             <line>
